@@ -24,7 +24,7 @@
     </div>
   </div>
 </template>
-<script lang="ts">
+<script lang="js">
 const response = await fetch('/config.yaml');
 import yaml from 'js-yaml'; // 引入js-yaml库来解析YAML文件
 import { ref, onMounted } from 'vue';
@@ -36,7 +36,7 @@ export default {
     const selectedSearchEngine = ref('');
     const searchEngines = ref([]);
     const favoriteSites = ref([]);
-    
+
     // 加載緩存的配置文件和網頁內容
     const loadCachedData = () => {
       const cachedConfig = localStorage.getItem('config');

@@ -8,4 +8,8 @@ export default defineConfig({
     vue(),
     tailwindcss()
   ],
+  build: {
+    target: 'esnext', // 更新为 esnext 支持最新的特性
+  },
 })
+

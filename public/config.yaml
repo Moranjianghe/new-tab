@@ -1,0 +1,17 @@
+searchEngines:
+  - name: "Google"
+    url: "https://www.google.com/search?q="
+  - name: "Bing"
+    url: "https://www.bing.com/search?q="
+  - name: "DuckDuckGo"
+    url: "https://duckduckgo.com/?q="
+  
+favoriteSites:
+  - name: "GitHub"
+    url: "https://github.com"
+  - name: "StackOverflow"
+    url: "https://stackoverflow.com"
+  - name: "Reddit"
+    url: "https://www.reddit.com"
+  - name: "YouTube"
+    url: "https://www.youtube.com"

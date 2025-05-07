@@ -45,6 +45,9 @@ export default {
         const config = JSON.parse(cachedConfig);
         searchEngines.value = config.searchEngines || [];
         favoriteSites.value = config.favoriteSites || [];
+        console.log('Loaded cached config:', config);
+        
+        // 默認選中第一個搜索引擎
         if (searchEngines.value.length > 0) {
           selectedSearchEngine.value = searchEngines.value[0].url;
         }
@@ -54,7 +57,7 @@ export default {
     // 請求最新的配置文件和網頁內容並更新緩存
     const fetchLatestData = async () => {
       try {
-        const response = await fetch('/config.yaml');
+        const response = await fetch(configUrl);
         const configText = await response.text();
         const config = yaml.load(configText);
 
@@ -64,7 +67,8 @@ export default {
 
         // 更新緩存
         localStorage.setItem('config', JSON.stringify(config));
-
+        console.log('renew cached config:', config);
+        
         // 默認選中第一個搜索引擎
         if (searchEngines.value.length > 0) {
           selectedSearchEngine.value = searchEngines.value[0].url;
@@ -88,7 +92,7 @@ export default {
       */
 
       loadCachedData(); // 加載緩存的配置文件和網頁內容
-      try{
+      try {
         await fetchLatestData(); // 請求最新的配置文件和網頁內容並更新緩存
       } catch (error) {
         console.error('Failed to fetch latest config:', error);

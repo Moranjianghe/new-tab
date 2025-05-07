@@ -25,7 +25,8 @@
   </div>
 </template>
 <script lang="js">
-const response = await fetch('/config.yaml');
+let configUrl = '/config.yaml'; // 配置文件的URL
+const response = await fetch(configUrl); // 使用fetch API請求配置文件
 import yaml from 'js-yaml'; // 引入js-yaml库来解析YAML文件
 import { ref, onMounted } from 'vue';
 
@@ -73,18 +74,25 @@ export default {
       }
     };
 
-    // 解析YAML配置文件
+    // 在組件掛載時加載緩存的配置文件和網頁內容
     onMounted(async () => {
-      const response = await fetch('/config.yaml');
-      const configText = await response.text();
-      const config = yaml.load(configText);
+      /** 
+      if('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.register('/service-worker.js');
+          console.log('Service Worker registered successfully');
+        } catch (error) {
+          console.error('Service Worker registration failed:', error);
+        }
+      }
+      */
 
-      // 设置搜索引擎和常用网站
-      searchEngines.value = config.searchEngines;
-      favoriteSites.value = config.favoriteSites;
-
-      // 默认选中第一个搜索引擎
-      selectedSearchEngine.value = searchEngines.value[0].url;
+      loadCachedData(); // 加載緩存的配置文件和網頁內容
+      try{
+        await fetchLatestData(); // 請求最新的配置文件和網頁內容並更新緩存
+      } catch (error) {
+        console.error('Failed to fetch latest config:', error);
+      }
     });
 
     // 执行搜索

@@ -17,7 +17,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /^\/index\.html$/, // 精確匹配 /index.html
-            handler: 'NetworkFirst',
+            handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'html-cache',
               expiration: {
@@ -28,7 +28,7 @@ export default defineConfig({
           },
           {
             urlPattern: /^\/assets\/.*$/, // 匹配 /assets/ 下的所有資源
-            handler: 'NetworkFirst',
+            handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'assets-cache',
               expiration: {

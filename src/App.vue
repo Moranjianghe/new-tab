@@ -23,6 +23,17 @@
       <p>No commonly used websites available</p>
     </div>
   </div>
+  
+    <!-- Settings Button -->
+    <button @click="showSettings = true">Settings</button>
+
+    <!-- Settings Dialog -->
+    <div v-if="showSettings">
+      <p>Set Config URL:</p>
+      <input v-model="newConfigUrl" placeholder="Enter new config URL" />
+      <button @click="updateConfigUrl">Save</button>
+      <button @click="showSettings = false">Cancel</button>
+    </div>
 </template>
 <script lang="js">
 let configUrl = '/config.yaml'; // 配置文件的URL
@@ -37,6 +48,7 @@ export default {
     const selectedSearchEngine = ref('');
     const searchEngines = ref([]);
     const favoriteSites = ref([]);
+    const showSettings = ref(false);
 
     // 加載緩存的配置文件和網頁內容
     const loadCachedData = () => {
@@ -99,6 +111,17 @@ export default {
       }
     });
 
+    // 設置配置文件的URL
+    const updateConfigUrl = () => {
+      if (newConfigUrl.value.trim() !== '') {
+        configUrl = newConfigUrl.value.trim();
+        localStorage.setItem('configUrl', configUrl);
+        console.log('Updated configUrl:', configUrl);
+        showSettings.value = false;
+        fetchLatestData();
+      }
+    };
+
     // 执行搜索
     const performSearch = () => {
       if (searchQuery.value.trim() !== '') {
@@ -114,7 +137,8 @@ export default {
       selectedSearchEngine,
       searchEngines,
       favoriteSites,
-      performSearch
+      performSearch,
+      showSettings
     };
   }
 };

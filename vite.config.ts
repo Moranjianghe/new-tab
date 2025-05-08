@@ -5,6 +5,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  
+  //base: import.meta.env.VITE_BASE_URL || '/', 
+  
   plugins: [
     vue(),
     tailwindcss(),
@@ -14,7 +17,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /^\/index\.html$/, // 精確匹配 /index.html
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'html-cache',
               expiration: {
@@ -25,7 +28,7 @@ export default defineConfig({
           },
           {
             urlPattern: /^\/assets\/.*$/, // 匹配 /assets/ 下的所有資源
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'assets-cache',
               expiration: {

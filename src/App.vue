@@ -49,9 +49,17 @@ export default {
     const searchEngines = ref([]);
     const favoriteSites = ref([]);
     const showSettings = ref(false);
+    const newConfigUrl = ref(''); // 用於存儲新的配置文件URL
 
     // 加載緩存的配置文件和網頁內容
     const loadCachedData = () => {
+      
+      const cachedConfigUrl = localStorage.getItem('configUrl');
+      if (cachedConfigUrl) {
+        configUrl = cachedConfigUrl;
+        console.log('Loaded cached config URL:', configUrl);
+      } 
+      // 嘗試從localStorage中獲取緩存的配置文件和網頁內容
       const cachedConfig = localStorage.getItem('config');
       if (cachedConfig) {
         const config = JSON.parse(cachedConfig);
@@ -112,13 +120,13 @@ export default {
     });
 
     // 設置配置文件的URL
-    const updateConfigUrl = () => {
+    const updateConfigUrl =async () => {
       if (newConfigUrl.value.trim() !== '') {
         configUrl = newConfigUrl.value.trim();
         localStorage.setItem('configUrl', configUrl);
         console.log('Updated configUrl:', configUrl);
-        showSettings.value = false;
-        fetchLatestData();
+        await fetchLatestData();
+        showSettings.value = false; // 關閉設置對話框
       }
     };
 
@@ -138,7 +146,9 @@ export default {
       searchEngines,
       favoriteSites,
       performSearch,
-      showSettings
+      showSettings,
+      newConfigUrl,
+      updateConfigUrl,
     };
   }
 };

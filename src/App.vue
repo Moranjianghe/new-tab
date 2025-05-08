@@ -23,21 +23,19 @@
       <p>No commonly used websites available</p>
     </div>
   </div>
-  
-    <!-- Settings Button -->
-    <button @click="showSettings = true">Settings</button>
 
-    <!-- Settings Dialog -->
-    <div v-if="showSettings">
-      <p>Set Config URL:</p>
-      <input v-model="newConfigUrl" placeholder="Enter new config URL" />
-      <button @click="updateConfigUrl">Save</button>
-      <button @click="showSettings = false">Cancel</button>
-    </div>
+  <!-- Settings Button -->
+  <button @click="showSettings = true">Settings</button>
+
+  <!-- Settings Dialog -->
+  <div v-if="showSettings">
+    <p>Set Config URL:</p>
+    <input v-model="newConfigUrl" @click="$event.target.select()"/>
+    <button @click="updateConfigUrl">Save</button>
+    <button @click="showSettings = false">Cancel</button>
+  </div>
 </template>
 <script lang="js">
-let configUrl = '/config.yaml'; // 配置文件的URL
-const response = await fetch(configUrl); // 使用fetch API請求配置文件
 import yaml from 'js-yaml'; // 引入js-yaml库来解析YAML文件
 import { ref, onMounted } from 'vue';
 
@@ -49,16 +47,18 @@ export default {
     const searchEngines = ref([]);
     const favoriteSites = ref([]);
     const showSettings = ref(false);
-    const newConfigUrl = ref(''); // 用於存儲新的配置文件URL
+    const configUrl = ref('/config.yaml'); // 配置文件的URL
+    const newConfigUrl = configUrl; // 輸入框中的配置文件URL
+    const response =  fetch(configUrl.value); // 使用fetch API請求配置文件
 
     // 加載緩存的配置文件和網頁內容
     const loadCachedData = () => {
-      
+
       const cachedConfigUrl = localStorage.getItem('configUrl');
       if (cachedConfigUrl) {
-        configUrl = cachedConfigUrl;
+        configUrl.value = cachedConfigUrl;
         console.log('Loaded cached config URL:', configUrl);
-      } 
+      }
       // 嘗試從localStorage中獲取緩存的配置文件和網頁內容
       const cachedConfig = localStorage.getItem('config');
       if (cachedConfig) {
@@ -66,7 +66,7 @@ export default {
         searchEngines.value = config.searchEngines || [];
         favoriteSites.value = config.favoriteSites || [];
         console.log('Loaded cached config:', config);
-        
+
         // 默認選中第一個搜索引擎
         if (searchEngines.value.length > 0) {
           selectedSearchEngine.value = searchEngines.value[0].url;
@@ -77,7 +77,7 @@ export default {
     // 請求最新的配置文件和網頁內容並更新緩存
     const fetchLatestData = async () => {
       try {
-        const response = await fetch(configUrl);
+        const response = await fetch(configUrl.value);
         const configText = await response.text();
         const config = yaml.load(configText);
 
@@ -88,7 +88,7 @@ export default {
         // 更新緩存
         localStorage.setItem('config', JSON.stringify(config));
         console.log('renew cached config:', config);
-        
+
         // 默認選中第一個搜索引擎
         if (searchEngines.value.length > 0) {
           selectedSearchEngine.value = searchEngines.value[0].url;
@@ -120,10 +120,10 @@ export default {
     });
 
     // 設置配置文件的URL
-    const updateConfigUrl =async () => {
+    const updateConfigUrl = async () => {
       if (newConfigUrl.value.trim() !== '') {
-        configUrl = newConfigUrl.value.trim();
-        localStorage.setItem('configUrl', configUrl);
+        configUrl = newConfigUrl.trim();
+        localStorage.setItem('configUrl', configUrl.value);
         console.log('Updated configUrl:', configUrl);
         await fetchLatestData();
         showSettings.value = false; // 關閉設置對話框
@@ -149,6 +149,7 @@ export default {
       showSettings,
       newConfigUrl,
       updateConfigUrl,
+      configUrl,
     };
   }
 };

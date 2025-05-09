@@ -122,7 +122,7 @@ export default {
     // 設置配置文件的URL
     const updateConfigUrl = async () => {
       if (newConfigUrl.value.trim() !== '') {
-        configUrl = newConfigUrl.trim();
+        configUrl.value = newConfigUrl.value.trim();
         localStorage.setItem('configUrl', configUrl.value);
         console.log('Updated configUrl:', configUrl);
         await fetchLatestData();

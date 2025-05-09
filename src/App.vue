@@ -7,12 +7,16 @@
           {{ engine.name }}
         </option>
       </select>
-      <input v-model="searchQuery" @keyup.enter="performSearch" />
-      <button @click="performSearch">Search</button>
+      <input 
+        v-model="searchQuery" 
+        @keyup.enter="performSearch"
+        :placeholder="t('search.placeholder')"
+      />
+      <button @click="performSearch">{{ t('search.button') }}</button>
     </div>
     <!--List of Commonly Used Websites-->
     <div v-if="favoriteSites.length > 0">
-      <p>Commonly Used Websites</p>
+      <p>{{ t('favorites.title') }}</p>
       <div>
         <div v-for="(site, index) in favoriteSites" :key="index">
           <a :href="site.url" target="_blank">{{ site.name }}</a>
@@ -20,46 +24,53 @@
       </div>
     </div>
     <div v-else>
-      <p>No commonly used websites available</p>
+      <p>{{ t('favorites.empty') }}</p>
     </div>
   </div>
 
   <!-- Settings Button -->
-  <button @click="showSettings = true">Settings</button>
+  <button @click="showSettings = true">{{ t('settings.button') }}</button>
 
   <!-- Settings Dialog -->
   <div v-if="showSettings">
-    <p>Set Config URL:</p>
-    <input v-model="newConfigUrl" @click="$event.target.select()"/>
-    <button @click="updateConfigUrl">Save</button>
-    <button @click="showSettings = false">Cancel</button>
+    <div>
+      <p>{{ t('settings.configUrl') }}</p>
+      <input v-model="newConfigUrl" @click="$event.target.select()"/>
+      <button @click="updateConfigUrl">{{ t('settings.save') }}</button>
+      <button @click="showSettings = false">{{ t('settings.cancel') }}</button>
+    </div>
+    <!-- Language Selector -->
+    <select v-model="currentLocale" @change="changeLocale">
+      <option value="zh-TW">繁體中文</option>
+      <option value="en-US">English</option>
+    </select>
   </div>
 </template>
+
 <script lang="js">
-import yaml from 'js-yaml'; // 引入js-yaml库来解析YAML文件
+import yaml from 'js-yaml';
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 export default {
   name: 'App',
   setup() {
+    const { t, locale } = useI18n();
+    const currentLocale = ref(locale.value);
     const searchQuery = ref('');
     const selectedSearchEngine = ref('');
     const searchEngines = ref([]);
     const favoriteSites = ref([]);
     const showSettings = ref(false);
-    const configUrl = ref('/config.yaml'); // 配置文件的URL
-    const newConfigUrl = configUrl; // 輸入框中的配置文件URL
-    const response =  fetch(configUrl.value); // 使用fetch API請求配置文件
+    const configUrl = ref('/config.yaml');
+    const newConfigUrl = configUrl;
 
-    // 加載緩存的配置文件和網頁內容
     const loadCachedData = () => {
-
       const cachedConfigUrl = localStorage.getItem('configUrl');
       if (cachedConfigUrl) {
         configUrl.value = cachedConfigUrl;
         console.log('Loaded cached config URL:', configUrl);
       }
-      // 嘗試從localStorage中獲取緩存的配置文件和網頁內容
       const cachedConfig = localStorage.getItem('config');
       if (cachedConfig) {
         const config = JSON.parse(cachedConfig);
@@ -67,29 +78,24 @@ export default {
         favoriteSites.value = config.favoriteSites || [];
         console.log('Loaded cached config:', config);
 
-        // 默認選中第一個搜索引擎
         if (searchEngines.value.length > 0) {
           selectedSearchEngine.value = searchEngines.value[0].url;
         }
       }
     };
 
-    // 請求最新的配置文件和網頁內容並更新緩存
     const fetchLatestData = async () => {
       try {
         const response = await fetch(configUrl.value);
         const configText = await response.text();
         const config = yaml.load(configText);
 
-        // 更新數據
         searchEngines.value = config.searchEngines;
         favoriteSites.value = config.favoriteSites;
 
-        // 更新緩存
         localStorage.setItem('config', JSON.stringify(config));
         console.log('renew cached config:', config);
 
-        // 默認選中第一個搜索引擎
         if (searchEngines.value.length > 0) {
           selectedSearchEngine.value = searchEngines.value[0].url;
         }
@@ -98,39 +104,31 @@ export default {
       }
     };
 
-    // 在組件掛載時加載緩存的配置文件和網頁內容
     onMounted(async () => {
-      /** 
-      if('serviceWorker' in navigator) {
-        try {
-          await navigator.serviceWorker.register('/service-worker.js');
-          console.log('Service Worker registered successfully');
-        } catch (error) {
-          console.error('Service Worker registration failed:', error);
-        }
+      const savedLocale = localStorage.getItem('locale');
+      if (savedLocale) {
+        currentLocale.value = savedLocale;
+        locale.value = savedLocale;
       }
-      */
 
-      loadCachedData(); // 加載緩存的配置文件和網頁內容
+      loadCachedData();
       try {
-        await fetchLatestData(); // 請求最新的配置文件和網頁內容並更新緩存
+        await fetchLatestData();
       } catch (error) {
         console.error('Failed to fetch latest config:', error);
       }
     });
 
-    // 設置配置文件的URL
     const updateConfigUrl = async () => {
       if (newConfigUrl.value.trim() !== '') {
         configUrl.value = newConfigUrl.value.trim();
         localStorage.setItem('configUrl', configUrl.value);
         console.log('Updated configUrl:', configUrl);
         await fetchLatestData();
-        showSettings.value = false; // 關閉設置對話框
+        showSettings.value = false;
       }
     };
 
-    // 执行搜索
     const performSearch = () => {
       if (searchQuery.value.trim() !== '') {
         const url = `${selectedSearchEngine.value}${encodeURIComponent(searchQuery.value)}`;
@@ -138,7 +136,10 @@ export default {
       }
     };
 
-
+    const changeLocale = () => {
+      locale.value = currentLocale.value;
+      localStorage.setItem('locale', currentLocale.value);
+    };
 
     return {
       searchQuery,
@@ -150,6 +151,9 @@ export default {
       newConfigUrl,
       updateConfigUrl,
       configUrl,
+      t,
+      currentLocale,
+      changeLocale,
     };
   }
 };

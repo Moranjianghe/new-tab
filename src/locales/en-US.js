@@ -12,5 +12,8 @@ export default {
     configUrl: 'Set Config URL:',
     save: 'Save',
     cancel: 'Cancel'
+  },
+  tab: {
+    newTabTitle: 'New Tab',
   }
 }

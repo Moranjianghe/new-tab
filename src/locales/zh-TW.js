@@ -12,5 +12,10 @@ export default {
     configUrl: '設定配置網址：',
     save: '儲存',
     cancel: '取消'
+  },
+  tab: {
+    newTabTitle: '新分頁',
   }
 }
+
+

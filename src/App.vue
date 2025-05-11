@@ -1,13 +1,13 @@
-<template>
-  <div class="">
+<template >
+  <div class="w-full h-full flex flex-col items-center">
     <!--search bar-->
-    <div>
+    <div class="flex h-12 w-full max-w-[768px]  rounded-xl border border-black dark:border-white " >
       <select v-model="selectedSearchEngine">
         <option v-for="engine in searchEngines" :key="engine" :value="engine.url">
           {{ engine.name }}
         </option>
       </select>
-      <input 
+      <input class=" h-full flex-1"
         v-model="searchQuery" 
         @keyup.enter="performSearch"
         :placeholder="t('search.placeholder')"
@@ -105,6 +105,7 @@ export default {
     };
 
     onMounted(async () => {
+      document.title = t('tab.newTabTitle');
       const savedLocale = localStorage.getItem('locale');
       if (savedLocale) {
         currentLocale.value = savedLocale;
@@ -158,3 +159,7 @@ export default {
   }
 };
 </script>
+
+<style lang='css' >
+@import "tailwindcss";
+</style>

@@ -11,9 +11,8 @@
       </select>
       <input class=" h-full flex-1 focus:outline-none" v-model="searchQuery" @keyup.enter="performSearch"
         :placeholder="t('search.placeholder')" @focus="isSearchBarFocused = true" @blur="isSearchBarFocused = false" />
-      <div class="h-full w-18 flex items-center justify-center cursor-pointer"
-       @focus="isSearchBarFocused = true" @blur="isSearchBarFocused = false"
-        @click="performSearch">
+      <div class="h-full w-18 flex items-center justify-center cursor-pointer" @focus="isSearchBarFocused = true"
+        @blur="isSearchBarFocused = false" @click="performSearch">
         {{ t('search.button') }}
       </div>
     </div>
@@ -136,7 +135,7 @@ export default {
 
     const performSearch = () => {
       if (searchQuery.value.trim() !== '') {
-        const url = `${selectedSearchEngine.value}${encodeURIComponent(searchQuery.value)}`;
+        const url = selectedSearchEngine.value.replace('%s', encodeURIComponent(searchQuery.value));
         window.open(url, '_blank');
       }
     };

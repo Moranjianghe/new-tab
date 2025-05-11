@@ -47,6 +47,10 @@
       <option value="en-US">English</option>
     </select>
   </div>
+  <!--構建時間-->
+    <div class="fixed bottom-2 right-2 text-xs text-gray-400">
+    {{ t('buildInfo', { time: buildTime }) }}
+  </div>
 </template>
 
 <script lang="js">
@@ -67,6 +71,7 @@ export default {
     const configUrl = ref('/config.yaml');
     const newConfigUrl = configUrl;
     const isSearchBarFocused = ref(false);
+    const buildTime = ref(import.meta.env.VITE_BUILD_TIME || new Date().toISOString());
 
     const loadCachedData = () => {
       const cachedConfigUrl = localStorage.getItem('configUrl');

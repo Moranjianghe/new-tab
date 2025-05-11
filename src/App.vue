@@ -49,7 +49,7 @@
   </div>
   <!--構建時間-->
     <div class="fixed bottom-2 right-2 text-xs text-gray-400">
-    {{ t('buildInfo', { time: buildTime }) }}
+    Build time: {{ buildTime }}
   </div>
 </template>
 
@@ -163,7 +163,8 @@ export default {
       t,
       currentLocale,
       changeLocale,
-      isSearchBarFocused
+      isSearchBarFocused,
+      buildTime
     };
   }
 };

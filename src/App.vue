@@ -7,20 +7,15 @@
           {{ engine.name }}
         </option>
       </select>
-      <input 
-        v-model="searchQuery" 
-        @keyup.enter="performSearch"
-        :placeholder="t('search.placeholder')"
-      />
+      <input v-model="searchQuery" @keyup.enter="performSearch" :placeholder="t('search.placeholder')" />
       <button @click="performSearch">{{ t('search.button') }}</button>
     </div>
     <!--List of Commonly Used Websites-->
     <div v-if="favoriteSites.length > 0">
       <p>{{ t('favorites.title') }}</p>
-      <div>
-        <div v-for="(site, index) in favoriteSites" :key="index">
-          <a :href="site.url" target="_blank">{{ site.name }}</a>
-        </div>
+      <div class="favorites-container">
+        <!-- 使用遞迴組件處理每個項目 -->
+        <folder-item v-for="(site, index) in favoriteSites" :key="index" :item="site" />
       </div>
     </div>
     <div v-else>
@@ -35,7 +30,7 @@
   <div v-if="showSettings">
     <div>
       <p>{{ t('settings.configUrl') }}</p>
-      <input v-model="newConfigUrl" @click="$event.target.select()"/>
+      <input v-model="newConfigUrl" @click="$event.target.select()" />
       <button @click="updateConfigUrl">{{ t('settings.save') }}</button>
       <button @click="showSettings = false">{{ t('settings.cancel') }}</button>
     </div>
@@ -51,9 +46,13 @@
 import yaml from 'js-yaml';
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import FolderItem from './components/FolderItem.vue';
 
 export default {
   name: 'App',
+  components: {
+    FolderItem
+  },
   setup() {
     const { t, locale } = useI18n();
     const currentLocale = ref(locale.value);

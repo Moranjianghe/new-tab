@@ -12,10 +12,24 @@ searchEngines:
   - name: "秘塔"
     url: "https://metaso.cn/?q=%s"
   
+
 favoriteSites:
   - name: "YouTube"
     url: "https://www.youtube.com"
-  - name: "ChandlerAi"
-    url: "https://mychandler.bet/chat"
-  - name: "News | Folo"
-    url: "https://app.follow.is/timeline/view-0/folder-News/pending"
+  - type: "folder"
+    name: "AI 工具"
+    items:
+      - name: "ChandlerAi"
+        url: "https://mychandler.bet/chat"
+      - name: "Kimi"
+        url: "https://kimi.moonshot.cn/"
+  - type: "folder"
+    name: "新聞資訊"
+    items:
+      - name: "News | Folo"
+        url: "https://app.follow.is/timeline/view-0/folder-News/pending"
+      - type: "folder"
+        name: "財經"
+        items:
+          - name: "雪球"
+            url: "https://xueqiu.com/"

@@ -1,14 +1,20 @@
 <template>
-  <div class="">
+  <div class="w-full h-full flex flex-col items-center">
     <!--search bar-->
-    <div>
-      <select v-model="selectedSearchEngine">
+    <div class="flex h-12 w-full max-w-[768px]  rounded-xl border border-black dark:border-white "
+      :class="{ 'ring-2 ring-blue-500 border-blue-500': isSearchBarFocused }">
+      <select class="focus:outline-none" v-model="selectedSearchEngine" @focus="isSearchBarFocused = true"
+        @blur="isSearchBarFocused = false">
         <option v-for="engine in searchEngines" :key="engine" :value="engine.url">
           {{ engine.name }}
         </option>
       </select>
-      <input v-model="searchQuery" @keyup.enter="performSearch" :placeholder="t('search.placeholder')" />
-      <button @click="performSearch">{{ t('search.button') }}</button>
+      <input class=" h-full flex-1 focus:outline-none" v-model="searchQuery" @keyup.enter="performSearch"
+        :placeholder="t('search.placeholder')" @focus="isSearchBarFocused = true" @blur="isSearchBarFocused = false" />
+      <div class="h-full w-18 flex items-center justify-center cursor-pointer" @focus="isSearchBarFocused = true"
+        @blur="isSearchBarFocused = false" @click="performSearch">
+        {{ t('search.button') }}
+      </div>
     </div>
     <!--List of Commonly Used Websites-->
     <div v-if="favoriteSites.length > 0">
@@ -31,6 +37,7 @@
     <div>
       <p>{{ t('settings.configUrl') }}</p>
       <input v-model="newConfigUrl" @click="$event.target.select()" />
+      <input v-model="newConfigUrl" @click="$event.target.select()" />
       <button @click="updateConfigUrl">{{ t('settings.save') }}</button>
       <button @click="showSettings = false">{{ t('settings.cancel') }}</button>
     </div>
@@ -39,6 +46,10 @@
       <option value="zh-TW">繁體中文</option>
       <option value="en-US">English</option>
     </select>
+  </div>
+  <!--構建時間-->
+    <div class="fixed bottom-2 right-2 text-xs text-gray-400">
+    Build time: {{ buildTime }}
   </div>
 </template>
 
@@ -63,6 +74,8 @@ export default {
     const showSettings = ref(false);
     const configUrl = ref('/config.yaml');
     const newConfigUrl = configUrl;
+    const isSearchBarFocused = ref(false);
+    const buildTime = ref(import.meta.env.VITE_BUILD_TIME || new Date().toISOString());
 
     const loadCachedData = () => {
       const cachedConfigUrl = localStorage.getItem('configUrl');
@@ -104,6 +117,7 @@ export default {
     };
 
     onMounted(async () => {
+      document.title = t('tab.newTabTitle');
       const savedLocale = localStorage.getItem('locale');
       if (savedLocale) {
         currentLocale.value = savedLocale;
@@ -130,7 +144,7 @@ export default {
 
     const performSearch = () => {
       if (searchQuery.value.trim() !== '') {
-        const url = `${selectedSearchEngine.value}${encodeURIComponent(searchQuery.value)}`;
+        const url = selectedSearchEngine.value.replace('%s', encodeURIComponent(searchQuery.value));
         window.open(url, '_blank');
       }
     };
@@ -153,7 +167,13 @@ export default {
       t,
       currentLocale,
       changeLocale,
+      isSearchBarFocused,
+      buildTime
     };
   }
 };
 </script>
+
+<style lang='css'>
+@import "tailwindcss";
+</style>

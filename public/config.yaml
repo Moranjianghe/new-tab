@@ -1,10 +1,10 @@
 searchEngines:
   - name: "Google"
-    url: "https://www.google.com/search?q="
+    url: "https://www.google.com/search?q=%s&nomo=1"
   - name: "Bing"
-    url: "https://www.bing.com/search?q="
+    url: "https://www.bing.com/search?q=%s"
   - name: "DuckDuckGo"
-    url: "https://duckduckgo.com/?q="
+    url: "https://duckduckgo.com/?q=%s"
   - name: "雪球"
     url: "https://xueqiu.com/k?q=%s"
   - name: "kimi"

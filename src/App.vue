@@ -37,7 +37,6 @@
     <div>
       <p>{{ t('settings.configUrl') }}</p>
       <input v-model="newConfigUrl" @click="$event.target.select()" />
-      <input v-model="newConfigUrl" @click="$event.target.select()" />
       <button @click="updateConfigUrl">{{ t('settings.save') }}</button>
       <button @click="showSettings = false">{{ t('settings.cancel') }}</button>
     </div>

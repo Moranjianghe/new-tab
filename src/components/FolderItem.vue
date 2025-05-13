@@ -1,5 +1,5 @@
 <template>
-    <div class="folder-item my-1">
+    <div class="my-1">
       <!-- 資料夾標題 -->
       <div v-if="item.type === 'folder'" 
            class="folder-title flex items-center px-2 py-1 rounded hover:bg-gray-100 cursor-pointer transition-colors"
@@ -17,7 +17,7 @@
           <a v-else 
              :href="child.url" 
              target="_blank" 
-             class="site-link flex items-center px-2 py-1 rounded text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+             class=" flex items-center px-2 py-1 rounded text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
             {{ child.name }}
           </a>
         </div>
@@ -27,7 +27,7 @@
       <a v-else-if="!item.type || item.type !== 'folder'" 
          :href="item.url" 
          target="_blank" 
-         class="site-link flex items-center px-2 py-1 rounded text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+         class="flex items-center px-2 py-1 rounded text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
         {{ item.name }}
       </a>
     </div>

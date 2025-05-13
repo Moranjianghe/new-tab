@@ -1,21 +1,22 @@
-<template class="text-sky-500 border-pink-500 dark:border-white">
-  <div class="folder-item my-1">
+<template>
+  <div class="text-sky-500 border-pink-500 dark:border-white folder-item my-1 flex flex-col">
     <!-- 資料夾標題 -->
     <div v-if="item.type === 'folder'"
-      class="flex items-center px-2 py-1 rounded hover:bg-pink-100 cursor-pointer transition-colors"
+      class="flex items-center px-2 py-1 rounded hover:bg-pink-100 cursor-pointer transition-colors w-auto w-auto inline-block self-start"
       @click="toggleOpen">
-      <span class="text-pink-500 dark:text-white mr-1 w-4">{{ item.isOpen ? '▼' : '▶' }}</span>
+      <span class="text-pink-500 dark:text-white mr-1 w-4 " >{{ item.isOpen ? '▼' : '▶' }}</span>
       <span class="font-medium">{{ item.name }}</span>
     </div>
 
     <!-- 資料夾內容 (遞迴) -->
-    <div v-if="item.type === 'folder' && item.isOpen" class="folder-content pl-4 border-l-2 border-sky-200 ml-2">
-      <div v-for="(child, index) in item.items" :key="index" class="py-0.5">
+    <div v-if="item.type === 'folder' && item.isOpen"
+      class="folder-content pl-4 border-l-2 border-sky-200 ml-2 w-auto inline-block  self-start ">
+      <div v-for="(child, index) in item.items" :key="index" class="py-0.5 flex col">
         <!-- 遞迴呼叫自身組件來處理子資料夾 -->
         <folder-item v-if="child.type === 'folder'" :item="child" />
         <!-- 一般網站連結 -->
         <a v-else :href="child.url" target="_blank"
-          class="flex items-center px-2 py-1 rounded  hover:bg-pink-100  transition-colors">
+          class="flex items-center px-2 py-1 rounded  hover:bg-pink-100  transition-colors w-auto inline-block  self-start">
           {{ child.name }}
         </a>
       </div>
@@ -23,7 +24,7 @@
 
     <!-- 一般網站連結 -->
     <a v-else-if="!item.type || item.type !== 'folder'" :href="item.url" target="_blank"
-      class="flex items-center px-2 py-1 rounded  hover:bg-pink-100  transition-colors">
+      class="flex items-center px-2 py-1 rounded  hover:bg-pink-100  transition-colors w-auto inline-block  self-start">
       {{ item.name }}
     </a>
   </div>

@@ -1,54 +1,59 @@
 <template>
-  <div class="text-sky-500 border-pink-500 dark:border-white  w-full h-full flex flex-col items-center">
-    <!--search bar-->
-    <div class="flex h-12 w-full max-w-[768px]  rounded-xl border-2 ring-2 ring-white  transition-colors  "
-      :class="{ 'ring-pink-500 border-pink-500': isSearchBarFocused }">
-      <select class="focus:outline-none" v-model="selectedSearchEngine" @focus="isSearchBarFocused = true"
-        @blur="isSearchBarFocused = false">
-        <option v-for="engine in searchEngines" :key="engine" :value="engine.url">
-          {{ engine.name }}
-        </option>
+  <div class="text-sky-500 border-pink-500 dark:border-white dark:bg-black  min-h-screen p-2 max-w-[768px]">
+    <div class=" ">
+    </div>
+      <!--search bar-->
+      <div
+        class="md:mt-[30vh] flex h-12  rounded-xl border-2 ring-2 ring-white dark:ring-black  transition-colors  "
+        :class="{ 'ring-pink-500 border-pink-500': isSearchBarFocused }">
+        <select class="focus:outline-none" v-model="selectedSearchEngine" @focus="isSearchBarFocused = true"
+          @blur="isSearchBarFocused = false">
+          <option v-for="engine in searchEngines" :key="engine" :value="engine.url">
+            {{ engine.name }}
+          </option>
+        </select>
+        <input class=" h-full flex-1 focus:outline-none" v-model="searchQuery" @keyup.enter="performSearch"
+          :placeholder="t('search.placeholder')" @focus="isSearchBarFocused = true"
+          @blur="isSearchBarFocused = false" />
+        <div class="h-full w-18 flex items-center justify-center cursor-pointer" @focus="isSearchBarFocused = true"
+          @blur="isSearchBarFocused = false" @click="performSearch">
+          {{ t('search.button') }}
+        </div>
+      </div>
+      <!--List of Commonly Used Websites-->
+      <div v-if="favoriteSites.length > 0">
+        <p class="mb-4 mt-12 mx-2 text-left text-pink-500">{{ t('favorites.title') }}</p>
+        <div class="favorites-container  flex flex-col ">
+          <!-- 使用遞迴組件處理每個項目 -->
+          <folder-item v-for="(site, index) in favoriteSites" :key="index" :item="site" />
+        </div>
+      </div>
+      <div v-else>
+        <p>{{ t('favorites.empty') }}</p>
+      </div>
+
+
+    <!-- Settings Button -->
+    <button @click="showSettings = true">{{ t('settings.button') }}</button>
+
+    <!-- Settings Dialog -->
+    <div v-if="showSettings">
+      <div>
+        <p>{{ t('settings.configUrl') }}</p>
+        <input v-model="newConfigUrl" @click="$event.target.select()" />
+        <button @click="updateConfigUrl">{{ t('settings.save') }}</button>
+        <button @click="showSettings = false">{{ t('settings.cancel') }}</button>
+      </div>
+      <!-- Language Selector -->
+      <select v-model="currentLocale" @change="changeLocale">
+        <option value="zh-TW">繁體中文</option>
+        <option value="en-US">English</option>
       </select>
-      <input class=" h-full flex-1 focus:outline-none" v-model="searchQuery" @keyup.enter="performSearch"
-        :placeholder="t('search.placeholder')" @focus="isSearchBarFocused = true" @blur="isSearchBarFocused = false" />
-      <div class="h-full w-18 flex items-center justify-center cursor-pointer" @focus="isSearchBarFocused = true"
-        @blur="isSearchBarFocused = false" @click="performSearch">
-        {{ t('search.button') }}
-      </div>
     </div>
-    <!--List of Commonly Used Websites-->
-    <div v-if="favoriteSites.length > 0">
-      <p>{{ t('favorites.title') }}</p>
-      <div class="favorites-container">
-        <!-- 使用遞迴組件處理每個項目 -->
-        <folder-item v-for="(site, index) in favoriteSites" :key="index" :item="site" />
-      </div>
+    <!--構建時間-->
+    <div class="fixed bottom-2 right-2 text-xs text-gray-500">
+      Build time: {{ buildTime }}
     </div>
-    <div v-else>
-      <p>{{ t('favorites.empty') }}</p>
-    </div>
-  </div>
-
-  <!-- Settings Button -->
-  <button @click="showSettings = true">{{ t('settings.button') }}</button>
-
-  <!-- Settings Dialog -->
-  <div v-if="showSettings">
-    <div>
-      <p>{{ t('settings.configUrl') }}</p>
-      <input v-model="newConfigUrl" @click="$event.target.select()" />
-      <button @click="updateConfigUrl">{{ t('settings.save') }}</button>
-      <button @click="showSettings = false">{{ t('settings.cancel') }}</button>
-    </div>
-    <!-- Language Selector -->
-    <select v-model="currentLocale" @change="changeLocale">
-      <option value="zh-TW">繁體中文</option>
-      <option value="en-US">English</option>
-    </select>
-  </div>
-  <!--構建時間-->
-  <div class="fixed bottom-2 right-2 text-xs text-gray-500">
-    Build time: {{ buildTime }}
   </div>
 </template>
 

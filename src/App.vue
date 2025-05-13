@@ -1,8 +1,8 @@
 <template>
-  <div class="w-full h-full flex flex-col items-center">
+  <div class="text-sky-500 border-pink-500 dark:border-white  w-full h-full flex flex-col items-center">
     <!--search bar-->
-    <div class="flex h-12 w-full max-w-[768px]  rounded-xl border border-black dark:border-white "
-      :class="{ 'ring-2 ring-blue-500 border-blue-500': isSearchBarFocused }">
+    <div class="flex h-12 w-full max-w-[768px]  rounded-xl border-2 ring-2 ring-white  transition-colors  "
+      :class="{ 'ring-pink-500 border-pink-500': isSearchBarFocused }">
       <select class="focus:outline-none" v-model="selectedSearchEngine" @focus="isSearchBarFocused = true"
         @blur="isSearchBarFocused = false">
         <option v-for="engine in searchEngines" :key="engine" :value="engine.url">
@@ -47,7 +47,7 @@
     </select>
   </div>
   <!--構建時間-->
-    <div class="fixed bottom-2 right-2 text-xs text-gray-400">
+  <div class="fixed bottom-2 right-2 text-xs text-gray-500">
     Build time: {{ buildTime }}
   </div>
 </template>

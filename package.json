@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "vercel": "vue-tsc -b && cross-env VITE_BUILD_TIME=\"$(date)\" vite build",
     "preview": "vite preview",
     "extension": "vue-tsc -b && vite build --mode extension",
     "githubIo": "vue-tsc -b && vite build --base=/my-new-tab/"

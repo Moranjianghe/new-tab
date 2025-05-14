@@ -1,10 +1,10 @@
 <template>
-  <div class="text-sky-500 border-pink-500 dark:border-white dark:bg-black  min-h-screen p-2 md:w-[80vw] max-w-[768px]">
+  <div class="text-sky-500 border-pink-500 dark:border-white dark:bg-black  min-h-screen p-2 md:w-[80%] max-w-[768px]">
     <div class=" ">
     </div>
       <!--search bar-->
       <div
-        class="md:mt-[30vh] flex h-12  rounded-xl border-2 ring-2 ring-white dark:ring-black  transition-colors  "
+        class="md:mt-[40%] flex h-12  rounded-xl border-2 ring-2 ring-white dark:ring-black  transition-colors  "
         :class="{ 'ring-pink-500 border-pink-500': isSearchBarFocused }">
         <select class="focus:outline-none" v-model="selectedSearchEngine" @focus="isSearchBarFocused = true"
           @blur="isSearchBarFocused = false">

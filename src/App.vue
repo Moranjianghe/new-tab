@@ -1,5 +1,5 @@
 <template>
-  <div class="text-sky-500 border-pink-500 dark:border-white dark:bg-black  min-h-screen p-2 max-w-[768px]">
+  <div class="text-sky-500 border-pink-500 dark:border-white dark:bg-black  min-h-screen p-2 md:w-[80vw] max-w-[768px]">
     <div class=" ">
     </div>
       <!--search bar-->

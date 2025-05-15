@@ -22,7 +22,7 @@
       </div>
       <!--List of Commonly Used Websites-->
       <div v-if="favoriteSites.length > 0">
-        <p class="mb-4 mt-12 mx-2 text-left text-pink-500">{{ t('favorites.title') }}</p>
+        <h2 class="text-2xl mb-4 mt-12 mx-2 text-left text-pink-500">{{ t('favorites.title') }}</h2>
         <div class="favorites-container  flex flex-col ">
           <!-- 使用遞迴組件處理每個項目 -->
           <folder-item v-for="(site, index) in favoriteSites" :key="index" :item="site" />

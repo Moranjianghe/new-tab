@@ -1,36 +1,35 @@
 <template>
-  <div class="text-sky-500 border-pink-500 dark:border-white dark:bg-black  min-h-screen p-2 w-full md:w-[80lvw] max-w-[768px]">
+  <div
+    class="text-sky-500 border-pink-500 dark:border-white dark:bg-black  min-h-screen p-2 w-full md:w-[80lvw] max-w-[768px]">
     <div class=" ">
     </div>
-      <!--search bar-->
-      <div
-        class="md:mt-[40lvh] flex h-12  rounded-xl border-2 ring-2 ring-white dark:ring-black  transition-colors  "
-        :class="{ 'ring-pink-500 border-pink-500': isSearchBarFocused }">
-        <select class="focus:outline-none" v-model="selectedSearchEngine" @focus="isSearchBarFocused = true"
-          @blur="isSearchBarFocused = false">
-          <option v-for="engine in searchEngines" :key="engine" :value="engine.url">
-            {{ engine.name }}
-          </option>
-        </select>
-        <input class=" h-full flex-1 focus:outline-none" v-model="searchQuery" @keyup.enter="performSearch"
-          :placeholder="t('search.placeholder')" @focus="isSearchBarFocused = true"
-          @blur="isSearchBarFocused = false" />
-        <div class="h-full w-18 flex items-center justify-center cursor-pointer" @focus="isSearchBarFocused = true"
-          @blur="isSearchBarFocused = false" @click="performSearch">
-          {{ t('search.button') }}
-        </div>
+    <!--search bar-->
+    <div class="md:mt-[40lvh] flex h-12  rounded-xl border-2 ring-2 ring-white dark:ring-black  transition-colors  "
+      :class="{ 'ring-pink-500 border-pink-500': isSearchBarFocused }">
+      <select class="focus:outline-none" v-model="selectedSearchEngine" @focus="isSearchBarFocused = true"
+        @blur="isSearchBarFocused = false">
+        <option v-for="engine in searchEngines" :key="engine" :value="engine.url">
+          {{ engine.name }}
+        </option>
+      </select>
+      <input class=" h-full flex-1 focus:outline-none" v-model="searchQuery" @keyup.enter="performSearch"
+        :placeholder="t('search.placeholder')" @focus="isSearchBarFocused = true" @blur="isSearchBarFocused = false" />
+      <div class="h-full w-18 flex items-center justify-center cursor-pointer" @focus="isSearchBarFocused = true"
+        @blur="isSearchBarFocused = false" @click="performSearch">
+        {{ t('search.button') }}
       </div>
-      <!--List of Commonly Used Websites-->
-      <div v-if="favoriteSites.length > 0">
-        <h2 class="text-2xl mb-4 mt-12 mx-2 text-left text-pink-500">{{ t('favorites.title') }}</h2>
-        <div class="favorites-container  flex flex-col ">
-          <!-- 使用遞迴組件處理每個項目 -->
-          <folder-item v-for="(site, index) in favoriteSites" :key="index" :item="site" />
-        </div>
+    </div>
+    <!--List of Commonly Used Websites-->
+    <div v-if="favoriteSites.length > 0">
+      <h2 class="text-2xl mb-4 mt-12 mx-2 text-left text-pink-500">{{ t('favorites.title') }}</h2>
+      <div class="favorites-container  flex flex-col ">
+        <!-- 使用遞迴組件處理每個項目 -->
+        <folder-item v-for="(site, index) in favoriteSites" :key="index" :item="site" />
       </div>
-      <div v-else>
-        <p>{{ t('favorites.empty') }}</p>
-      </div>
+    </div>
+    <div v-else>
+      <p>{{ t('favorites.empty') }}</p>
+    </div>
 
 
     <!-- Settings Button -->
@@ -149,6 +148,21 @@ export default {
     const performSearch = () => {
       if (searchQuery.value.trim() !== '') {
         const url = selectedSearchEngine.value.replace('%s', encodeURIComponent(searchQuery.value));
+        window.open(url, '_blank');
+      }
+    };
+
+    const openUrl = (url) => {
+      // 如果是 chrome:// 開頭的 URL，使用 chrome API
+      if (url.startsWith('chrome://') && typeof chrome !== 'undefined' && chrome.runtime) {
+        chrome.runtime.sendMessage({ action: 'openUrl', url: url })
+          .catch(error => {
+            console.error('Failed to open chrome:// URL:', error);
+            // 降級處理：嘗試普通方式打開
+            window.open(url, '_blank');
+          });
+      } else {
+        // 一般 URL 使用普通方式打開
         window.open(url, '_blank');
       }
     };

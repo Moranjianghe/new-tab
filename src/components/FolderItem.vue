@@ -4,7 +4,7 @@
     <div v-if="item.type === 'folder'"
       class="flex items-center px-2 py-1 rounded hover:bg-pink-100 cursor-pointer transition-colors w-auto w-auto inline-block self-start"
       @click="toggleOpen">
-      <span class="text-pink-500 dark:text-white mr-1 w-4 " >{{ item.isOpen ? '▼' : '▶' }}</span>
+      <span class="text-pink-500 dark:text-white mr-1 w-4 ">{{ item.isOpen ? '▼' : '▶' }}</span>
       <span class="font-medium">{{ item.name }}</span>
     </div>
 
@@ -15,16 +15,16 @@
         <!-- 遞迴呼叫自身組件來處理子資料夾 -->
         <folder-item v-if="child.type === 'folder'" :item="child" />
         <!-- 一般網站連結 -->
-        <a v-else :href="child.url" target="_blank"
-          class="flex items-center px-2 py-1 rounded  hover:bg-pink-100  transition-colors w-auto inline-block  self-start">
+        <a v-else target="_blank" @click="openUrl(child.url)"
+          class="flex items-center px-2 py-1 rounded  hover:bg-pink-100  cursor-pointer  transition-colors w-auto inline-block  self-start">
           {{ child.name }}
         </a>
       </div>
     </div>
 
     <!-- 一般網站連結 -->
-    <a v-else-if="!item.type || item.type !== 'folder'" :href="item.url" target="_blank"
-      class="flex items-center px-2 py-1 rounded  hover:bg-pink-100  transition-colors w-auto inline-block  self-start">
+    <a v-else-if="!item.type || item.type !== 'folder'" target="_blank" @click="openUrl(item.url)"
+      class="flex items-center px-2 py-1 rounded  hover:bg-pink-100  cursor-pointer  transition-colors w-auto inline-block  self-start">
       {{ item.name }}
     </a>
   </div>
@@ -42,8 +42,25 @@ export default {
   methods: {
     toggleOpen() {
       this.item.isOpen = !this.item.isOpen;
+    },
+    openUrl(url) {
+      // 在這裡可以添加任何額外的邏輯，例如記錄點擊或更新狀態
+      console.log(`Opening URL: ${url}`);
+      if (url.startsWith('chrome://') && typeof chrome !== 'undefined' && chrome.runtime) {
+        chrome.runtime.sendMessage({ action: 'openUrl', url: url }, (response) => {
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError);
+          }
+        });
+      } else {
+        // 否則，使用 window.open() 打開新頁面
+        window.open(url, '_blank');
+      }
+
     }
-  }
+
+  },
+
 }
 </script>
 <style lang='css'>

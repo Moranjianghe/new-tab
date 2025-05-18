@@ -1,0 +1,16 @@
+{
+  "name": "new tab",
+  "description": "A new tab page for Chrome",
+  "version": "0.2025.5.8",
+  "manifest_version": 3,
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": [
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {}
+}

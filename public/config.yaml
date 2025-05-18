@@ -14,6 +14,10 @@ searchEngines:
   
 
 favoriteSites:
+  - name: "browser history"
+    url: "chrome://history/"
+  - name: "browser bookmarks"
+    url: "chrome://bookmarks/"
   - name: "YouTube"
     url: "https://www.youtube.com"
   - type: "folder"

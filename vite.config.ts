@@ -26,8 +26,12 @@ export default defineConfig(({ mode }) => ({
       name: 'copy-manifest',
       writeBundle() {
         // 複製 manifest.json 到 dist 目錄
-        if (fs.existsSync('./manifest.json')) {
-          fs.copyFileSync('./manifest.json', './dist/manifest.json')
+        if (fs.existsSync('./extension/manifest.json')) {
+          fs.copyFileSync('./extension/manifest.json', './dist/manifest.json')
+        }
+        // 複製 background.js 到 dist 目錄
+        if (fs.existsSync('./extension/background.js')) {
+          fs.copyFileSync('./extension/background.js', './dist/background.js')
         }
       }
     }] : [

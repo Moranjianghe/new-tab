@@ -39,7 +39,15 @@ export default {
       required: true
     }
   },
+  mounted() {
+    // 檢查並設置初始展開狀態
+    if (this.item.type === 'folder' && this.item.expanded === true) {
+      this.item.isOpen = true;
+    }
+  },
   methods: {
+
+    
     toggleOpen() {
       this.item.isOpen = !this.item.isOpen;
     },

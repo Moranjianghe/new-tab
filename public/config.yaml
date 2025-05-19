@@ -22,16 +22,17 @@ favoriteSites:
     url: "https://www.youtube.com"
   - type: "folder"
     name: "AI 工具"
+    expanded: true
     items:
       - name: "ChandlerAi"
         url: "https://mychandler.bet/chat"
       - name: "Kimi"
         url: "https://kimi.moonshot.cn/"
   - type: "folder"
-    name: "新聞資訊"
+    name: 新聞資訊
     items:
-      - name: "News | Folo"
-        url: "https://app.follow.is/timeline/view-0/folder-News/pending"
+      - name: Folo
+        url: "https://app.follow.is/"
       - type: "folder"
         name: "財經"
         items:

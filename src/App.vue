@@ -24,7 +24,7 @@
       <h2 class="text-2xl mb-4 mt-12 mx-2 text-left text-pink-500">{{ t('favorites.title') }}</h2>
       <div class="favorites-container  flex flex-col ">
         <!-- 使用遞迴組件處理每個項目 -->
-        <folder-item v-for="(site, index) in favoriteSites" :key="index" :item="site" />
+        <folder-item v-for="(site, index) in favoriteSites" :key="index" :item="site" :path="site.name"/>
       </div>
     </div>
     <div v-else>
@@ -80,6 +80,23 @@ export default {
     const isSearchBarFocused = ref(false);
     const buildTime = ref(import.meta.env.VITE_BUILD_TIME || new Date().toISOString());
 
+    const syncFolderOpenState = (items,parentPath='') => {
+  if (!Array.isArray(items)) return;
+  items.forEach(item => {
+    if (item.type === 'folder' && item.name) {
+      const path = `${parentPath}/${item.name}`;
+
+      const savedState = localStorage.getItem(`folder_${path}_state`);
+      if (savedState !== null) {
+        item.isOpen = savedState === 'true';
+      }
+      // 遞迴處理子資料夾
+      if (Array.isArray(item.items)) {
+        syncFolderOpenState(item.items,path);
+      }
+    }
+  });
+};
     const loadCachedData = () => {
       const cachedConfigUrl = localStorage.getItem('configUrl');
       if (cachedConfigUrl) {
@@ -99,6 +116,28 @@ export default {
       }
     };
 
+    function cleanObsoleteFolderStates(items, validNames = new Set()) {
+  if (!Array.isArray(items)) return;
+  items.forEach(item => {
+    if (item.type === 'folder' && item.name) {
+      validNames.add(item.name);
+      if (Array.isArray(item.items)) {
+        cleanObsoleteFolderStates(item.items, validNames);
+      }
+    }
+  });
+  // 清理 localStorage
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith('folder_') && key.endsWith('_state')) {
+      const name = key.slice(7, -6); // 取出資料夾名稱
+      if (!validNames.has(path)) {
+        localStorage.removeItem(key);
+      }
+    }
+  });
+}
+
+    // Fetch the latest config data from the URL
     const fetchLatestData = async () => {
       try {
         const response = await fetch(configUrl.value);
@@ -107,6 +146,8 @@ export default {
 
         searchEngines.value = config.searchEngines;
         favoriteSites.value = config.favoriteSites;
+
+        syncFolderOpenState(favoriteSites.value);
 
         localStorage.setItem('config', JSON.stringify(config));
         console.log('renew cached config:', config);
@@ -133,6 +174,7 @@ export default {
       } catch (error) {
         console.error('Failed to fetch latest config:', error);
       }
+      cleanObsoleteFolderStates(favoriteSites.value);
     });
 
     const updateConfigUrl = async () => {

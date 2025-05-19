@@ -22,7 +22,6 @@ favoriteSites:
     url: "https://www.youtube.com"
   - type: "folder"
     name: "AI 工具"
-    expanded: true
     items:
       - name: "ChandlerAi"
         url: "https://mychandler.bet/chat"

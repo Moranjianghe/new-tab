@@ -39,17 +39,23 @@ export default {
       required: true
     }
   },
-  mounted() {
-    // 檢查並設置初始展開狀態
-    if (this.item.type === 'folder' && this.item.expanded === true) {
-      this.item.isOpen = true;
+  created() {
+    if(this.item.type === 'folder' && this.item.name){
+      const savedState = localStorage.getItem(`folder_${this.item.name}_state`);
+      if (savedState !== null) {
+        this.item.isOpen = savedState === 'true';
+      } 
     }
   },
-  methods: {
+    methods: {
 
     
     toggleOpen() {
       this.item.isOpen = !this.item.isOpen;
+      //儲存資料夾狀態到 localStorage
+      if(this.item.name){
+        localStorage.setItem(`folder_${this.item.path}_state`, this.item.isOpen);
+      }
     },
     openUrl(url) {
       // 在這裡可以添加任何額外的邏輯，例如記錄點擊或更新狀態

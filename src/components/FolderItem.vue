@@ -13,7 +13,7 @@
       class="folder-content pl-4 border-l-2 border-sky-200 ml-2 w-auto inline-block  self-start ">
       <div v-for="(child, index) in item.items" :key="index" class="py-0.5 flex col">
         <!-- 遞迴呼叫自身組件來處理子資料夾 -->
-        <folder-item v-if="child.type === 'folder'" :item="child" />
+        <folder-item v-if="child.type === 'folder'" :item="child" :path="`${path}/${child.name}`"/>
         <!-- 一般網站連結 -->
         <a v-else target="_blank" @click="openUrl(child.url)"
           class="flex items-center px-2 py-1 rounded  hover:bg-pink-100  cursor-pointer  transition-colors w-auto inline-block  self-start">
@@ -31,17 +31,22 @@
 </template>
 
 <script>
+
 export default {
   name: 'FolderItem',
   props: {
     item: {
       type: Object,
       required: true
+    },
+    path: {
+      type: String,
+      required: true
     }
   },
   created() {
-    if(this.item.type === 'folder' && this.item.name){
-      const savedState = localStorage.getItem(`folder_${this.item.name}_state`);
+    if(this.item.type === 'folder' && this.path){
+      const savedState = localStorage.getItem(`folder_${this.path}_state`);
       if (savedState !== null) {
         this.item.isOpen = savedState === 'true';
       } 
@@ -54,7 +59,7 @@ export default {
       this.item.isOpen = !this.item.isOpen;
       //儲存資料夾狀態到 localStorage
       if(this.item.name){
-        localStorage.setItem(`folder_${this.item.path}_state`, this.item.isOpen);
+        localStorage.setItem(`folder_${this.path}_state`, this.item.isOpen);
       }
     },
     openUrl(url) {

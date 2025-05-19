@@ -24,7 +24,7 @@
       <h2 class="text-2xl mb-4 mt-12 mx-2 text-left text-pink-500">{{ t('favorites.title') }}</h2>
       <div class="favorites-container  flex flex-col ">
         <!-- 使用遞迴組件處理每個項目 -->
-        <folder-item v-for="(site, index) in favoriteSites" :key="index" :item="site" :path="site.name"/>
+        <folder-item v-for="(site, index) in favoriteSites" :key="index" :item="site" :path="site.name" />
       </div>
     </div>
     <div v-else>
@@ -76,27 +76,28 @@ export default {
     const favoriteSites = ref([]);
     const showSettings = ref(false);
     const configUrl = ref('/config.yaml');
-    const newConfigUrl = configUrl;
+    const newConfigUrl = ref(configUrl.value);
     const isSearchBarFocused = ref(false);
     const buildTime = ref(import.meta.env.VITE_BUILD_TIME || new Date().toISOString());
 
-    const syncFolderOpenState = (items,parentPath='') => {
-  if (!Array.isArray(items)) return;
-  items.forEach(item => {
-    if (item.type === 'folder' && item.name) {
-      const path = `${parentPath}/${item.name}`;
+    const syncFolderOpenState = (items, parentPath = '') => {
+      if (!Array.isArray(items)) return;
+      items.forEach(item => {
+        if (item.type === 'folder' && item.name) {
+          const path = parentPath ? `${parentPath}/${item.name}` : item.name;
 
-      const savedState = localStorage.getItem(`folder_${path}_state`);
-      if (savedState !== null) {
-        item.isOpen = savedState === 'true';
-      }
-      // 遞迴處理子資料夾
-      if (Array.isArray(item.items)) {
-        syncFolderOpenState(item.items,path);
-      }
-    }
-  });
-};
+
+          const savedState = localStorage.getItem(`folder_${path}_state`);
+          if (savedState !== null) {
+            item.isOpen = savedState === 'true';
+          }
+          // 遞迴處理子資料夾
+          if (Array.isArray(item.items)) {
+            syncFolderOpenState(item.items, path);
+          }
+        }
+      });
+    };
     const loadCachedData = () => {
       const cachedConfigUrl = localStorage.getItem('configUrl');
       if (cachedConfigUrl) {
@@ -116,26 +117,29 @@ export default {
       }
     };
 
-    function cleanObsoleteFolderStates(items, validNames = new Set()) {
-  if (!Array.isArray(items)) return;
-  items.forEach(item => {
-    if (item.type === 'folder' && item.name) {
-      validNames.add(item.name);
-      if (Array.isArray(item.items)) {
-        cleanObsoleteFolderStates(item.items, validNames);
-      }
+    // 清理過時的資料夾狀態
+    // 這個函數會遍歷所有的資料夾，並將不在當前配置中的資料夾狀態從 localStorage 中刪除
+    function cleanObsoleteFolderStates(items, validPaths = new Set(), parentPath = '') {
+      if (!Array.isArray(items)) return;
+      items.forEach(item => {
+        if (item.type === 'folder' && item.name) {
+          validPaths.add(item.name);
+          if (Array.isArray(item.items)) {
+            const newPath = `${parentPath}/${item.name}`;
+            cleanObsoleteFolderStates(item.items, validPaths, newPath);
+          }
+        }
+      });
+      // 清理 localStorage
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('folder_') && key.endsWith('_state')) {
+          const path = key.slice(7, -6); // 取出資料夾名稱
+          if (!validPaths.has(path)) {
+            localStorage.removeItem(key);
+          }
+        }
+      });
     }
-  });
-  // 清理 localStorage
-  Object.keys(localStorage).forEach(key => {
-    if (key.startsWith('folder_') && key.endsWith('_state')) {
-      const name = key.slice(7, -6); // 取出資料夾名稱
-      if (!validNames.has(path)) {
-        localStorage.removeItem(key);
-      }
-    }
-  });
-}
 
     // Fetch the latest config data from the URL
     const fetchLatestData = async () => {

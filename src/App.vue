@@ -120,25 +120,40 @@ export default {
     // 清理過時的資料夾狀態
     // 這個函數會遍歷所有的資料夾，並將不在當前配置中的資料夾狀態從 localStorage 中刪除
     function cleanObsoleteFolderStates(items, validPaths = new Set(), parentPath = '') {
-      if (!Array.isArray(items)) return;
-      items.forEach(item => {
+      if (!Array.isArray(items)) return validPaths;
+      
+      for (const item of items) {
         if (item.type === 'folder' && item.name) {
-          validPaths.add(item.name);
+          const path = parentPath ? `${parentPath}/${item.name}` : item.name;
+          validPaths.add(path);
+          
+          // 遞迴收集子資料夾路徑
           if (Array.isArray(item.items)) {
-            const newPath = `${parentPath}/${item.name}`;
-            cleanObsoleteFolderStates(item.items, validPaths, newPath);
+            cleanObsoleteFolderStates(item.items, validPaths, path);
           }
         }
-      });
-      // 清理 localStorage
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('folder_') && key.endsWith('_state')) {
-          const path = key.slice(7, -6); // 取出資料夾名稱
-          if (!validPaths.has(path)) {
-            localStorage.removeItem(key);
+      }
+      
+      // 僅在最頂層調用時清理 localStorage
+      if (parentPath === '') {
+        // 列印檢查收集到的有效路徑
+        console.log('Valid folder paths:', Array.from(validPaths));
+        
+        let deletedCount = 0;
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('folder_') && key.endsWith('_state')) {
+            const path = key.slice(7, -6); // 取出資料夾路徑
+            if (!validPaths.has(path)) {
+              localStorage.removeItem(key);
+              deletedCount++;
+              console.log('Removed obsolete state:', key, 'for path:', path);
+            }
           }
-        }
-      });
+        });
+        console.log('Cleaned up', deletedCount, 'obsolete folder states');
+      }
+      
+      return validPaths;
     }
 
     // Fetch the latest config data from the URL
@@ -175,10 +190,11 @@ export default {
       loadCachedData();
       try {
         await fetchLatestData();
+        // 確保在資料載入完成後再清理
+        cleanObsoleteFolderStates(favoriteSites.value);
       } catch (error) {
         console.error('Failed to fetch latest config:', error);
       }
-      cleanObsoleteFolderStates(favoriteSites.value);
     });
 
     const updateConfigUrl = async () => {

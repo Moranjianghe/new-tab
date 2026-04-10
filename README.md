@@ -1,36 +1,29 @@
 # New Tab Extension
 
-A simple and customizable new tab extension for Chrome. Provides quick access to search engines and favorite websites.
+A customizable new-tab page extension for Chromium and Firefox.
 
 ## Features
 
 - Multiple search engines support (Google, Bing, DuckDuckGo, etc.)
-- Customizable favorite websites list
+- Customizable favorite websites and folder groups
 - Configurable via YAML file
-- Offline support with local storage cache
-- Clean and minimalist interface
+- Browser internal page mapping for Firefox (`chrome://` => `about:`)
+- Refreshed design language with responsive layout and modal settings
 
 ## Configuration
 
-The extension uses a YAML configuration file to manage search engines and favorite sites. You can modify config url to customize:
+The extension uses a YAML configuration file to manage search engines and favorite sites.
 
-- Search engines
-- Favorite websites
-
-Example configuration:
+Example:
 
 ```yaml
 searchEngines:
   - name: "Google"
-    url: "https://www.google.com/search?q="
-  - name: "Bing"
-    url: "https://www.bing.com/search?q="
+    url: "https://www.google.com/search?q=%s"
 
 favoriteSites:
   - name: "YouTube"
     url: "https://www.youtube.com"
-  - name: "GitHub"
-    url: "https://github.com"
 ```
 
 ## Development
@@ -39,12 +32,15 @@ favoriteSites:
 # Install dependencies
 npm install
 
-# Start development server
+# Run dev server
 npm run dev
 
-# Build for production
+# Build web app
 npm run build
 
-# Build browser extension
+# Build Chromium extension package
 npm run extension
+
+# Build Firefox extension package
+npm run extension:firefox
 ```

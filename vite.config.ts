@@ -6,12 +6,11 @@ import { VitePWA } from 'vite-plugin-pwa';
 import fs from 'node:fs';
 
 const extensionModes = new Set(['extension', 'firefox']);
-const manifestByMode: Record<string, string> = {
-  extension: './extension/manifest.json',
-  firefox: './extension/manifest.firefox.json',
-};
+const chromeManifestPath = './extension/manifest.json';
+const firefoxManifestPath = './extension/manifest.firefox.json';
 
 export default defineConfig(({ mode }) => ({
+  base: extensionModes.has(mode) ? './' : '/',
   plugins: [
     vue(),
     tailwindcss(),
@@ -20,7 +19,7 @@ export default defineConfig(({ mode }) => ({
           {
             name: 'copy-extension-assets',
             writeBundle() {
-              const manifestPath = manifestByMode[mode] || manifestByMode.extension;
+              const manifestPath = mode === 'firefox' ? firefoxManifestPath : chromeManifestPath;
               if (fs.existsSync(manifestPath)) {
                 fs.copyFileSync(manifestPath, './dist/manifest.json');
               }
@@ -64,6 +63,6 @@ export default defineConfig(({ mode }) => ({
         ]),
   ],
   build: {
-    target: 'es2020',
+    target: extensionModes.has(mode) ? 'es2018' : 'es2020',
   },
 }));

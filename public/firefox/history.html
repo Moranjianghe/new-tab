@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>浏览历史</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --text: #202124;
+        --muted: #5f6368;
+        --line: #dfe1e5;
+        --hover: #f1f3f4;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #202124;
+          --text: #e8eaed;
+          --muted: #9aa0a6;
+          --line: #5f6368;
+          --hover: #303134;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .wrap {
+        margin: 0 auto;
+        max-width: 980px;
+        padding: 20px 16px 28px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .search {
+        width: 100%;
+        margin: 0 0 14px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: transparent;
+        color: var(--text);
+      }
+
+      .status {
+        color: var(--muted);
+        margin: 10px 0 0;
+      }
+
+      .list {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .item {
+        display: grid;
+        gap: 2px;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .item:last-child {
+        border-bottom: 0;
+      }
+
+      .item:hover {
+        background: var(--hover);
+      }
+
+      .title {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        word-break: break-word;
+      }
+
+      .title:hover {
+        text-decoration: underline;
+      }
+
+      .meta {
+        color: var(--muted);
+        font-size: 12px;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>浏览历史</h1>
+      <input id="search" class="search" type="search" placeholder="搜索历史记录" />
+      <div id="list" class="list" aria-live="polite"></div>
+      <p id="status" class="status"></p>
+    </main>
+    <script src="./history.js"></script>
+  </body>
+</html>

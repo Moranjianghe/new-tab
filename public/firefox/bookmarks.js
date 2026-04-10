@@ -1,0 +1,94 @@
+const extensionApi = typeof browser !== "undefined" ? browser : typeof chrome !== "undefined" ? chrome : null;
+const hasPromiseApi = typeof browser !== "undefined";
+const bookmarksApi = extensionApi && extensionApi.bookmarks;
+const listEl = document.getElementById("list");
+const statusEl = document.getElementById("status");
+
+const getTree = () => {
+  if (!bookmarksApi) return Promise.reject(new Error("bookmarks api unavailable"));
+  if (hasPromiseApi) return bookmarksApi.getTree();
+  return new Promise((resolve, reject) => {
+    bookmarksApi.getTree((items) => {
+      const err = chrome.runtime && chrome.runtime.lastError;
+      if (err) {
+        reject(new Error(err.message));
+        return;
+      }
+      resolve(items || []);
+    });
+  });
+};
+
+const flatten = (nodes, depth = 0, bucket = []) => {
+  for (const node of nodes || []) {
+    if (!node) continue;
+    const isFolder = !node.url;
+    if (depth > 0 || node.title) {
+      bucket.push({
+        isFolder,
+        depth,
+        title: node.title || (isFolder ? "(未命名文件夹)" : "(无标题)"),
+        url: node.url || "",
+      });
+    }
+    if (Array.isArray(node.children) && node.children.length > 0) {
+      flatten(node.children, depth + 1, bucket);
+    }
+  }
+  return bucket;
+};
+
+const renderList = (items) => {
+  listEl.textContent = "";
+  if (!items.length) {
+    statusEl.textContent = "没有找到书签";
+    return;
+  }
+
+  statusEl.textContent = `共 ${items.length} 条`;
+  const frag = document.createDocumentFragment();
+
+  for (const item of items) {
+    const row = document.createElement("article");
+    row.className = "item";
+    row.style.paddingLeft = `${12 + Math.min(item.depth, 6) * 16}px`;
+
+    if (item.isFolder) {
+      const folder = document.createElement("div");
+      folder.className = "folder";
+      folder.textContent = item.title;
+      row.appendChild(folder);
+    } else {
+      const link = document.createElement("a");
+      link.className = "title";
+      link.href = item.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = item.title;
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = item.url;
+
+      row.append(link, meta);
+    }
+
+    frag.appendChild(row);
+  }
+
+  listEl.appendChild(frag);
+};
+
+const loadBookmarks = async () => {
+  try {
+    statusEl.textContent = "加载中...";
+    const tree = await getTree();
+    const items = flatten(tree);
+    renderList(items);
+  } catch (error) {
+    statusEl.textContent = "读取书签失败";
+    console.error(error);
+  }
+};
+
+loadBookmarks();

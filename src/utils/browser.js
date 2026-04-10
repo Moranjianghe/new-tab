@@ -1,20 +1,39 @@
-const FIREFOX_INTERNAL_URL_MAP = {
-  'chrome://history/': 'about:history',
-  'chrome://bookmarks/': 'about:bookmarks',
-  'chrome://downloads/': 'about:downloads',
-  'chrome://settings/': 'about:preferences',
+const FIREFOX_INTERNAL_URL_CANDIDATES = {
+  'chrome://history/': ['__EXT__/firefox/history.html'],
+  'chrome://bookmarks/': ['__EXT__/firefox/bookmarks.html'],
+  'chrome://downloads/': ['about:downloads'],
+  'chrome://settings/': ['about:preferences'],
+  'chrome://extensions/': ['about:addons'],
 };
 
 const isFirefox = () => typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent);
 
-const normalizeBrowserInternalUrl = (url) => {
-  if (!isFirefox()) return url;
-
-  const key = url.toLowerCase();
-  return FIREFOX_INTERNAL_URL_MAP[key] || url;
+const normalizeChromeInternalKey = (url) => {
+  const key = String(url).trim().toLowerCase();
+  return key.endsWith('/') ? key : `${key}/`;
 };
 
-const isPrivilegedUrl = (url) => url.startsWith('chrome://') || url.startsWith('about:');
+const getCandidateUrls = (url) => {
+  const trimmed = String(url).trim();
+  if (!trimmed) return [];
+
+  if (!isFirefox()) return [trimmed];
+  if (!trimmed.toLowerCase().startsWith('chrome://')) return [trimmed];
+
+  const key = normalizeChromeInternalKey(trimmed);
+  const mapped = FIREFOX_INTERNAL_URL_CANDIDATES[key];
+  if (!Array.isArray(mapped) || mapped.length === 0) return [trimmed];
+
+  const runtimeApi = typeof browser !== 'undefined' ? browser.runtime : typeof chrome !== 'undefined' ? chrome.runtime : null;
+  return mapped.map((item) => {
+    if (item.startsWith('__EXT__/')) {
+      return runtimeApi?.getURL ? runtimeApi.getURL(item.slice(8)) : item.slice(8);
+    }
+    return item;
+  });
+};
+
+const isPrivilegedUrl = (url) => url.startsWith('chrome://') || url.startsWith('about:') || url.startsWith('moz-extension://');
 
 const openWithWindow = (url) => {
   window.open(url, '_blank', 'noopener,noreferrer');
@@ -55,18 +74,25 @@ const sendOpenMessage = async (url) => {
 export const openBookmarkTarget = async (rawUrl) => {
   if (typeof rawUrl !== 'string') return;
 
-  const normalizedUrl = normalizeBrowserInternalUrl(rawUrl.trim());
-  if (!normalizedUrl) return;
+  const candidates = getCandidateUrls(rawUrl);
+  if (candidates.length === 0) return;
 
-  if (!isPrivilegedUrl(normalizedUrl)) {
-    openWithWindow(normalizedUrl);
+  if (!isPrivilegedUrl(candidates[0])) {
+    openWithWindow(candidates[0]);
     return;
   }
 
-  try {
-    await sendOpenMessage(normalizedUrl);
-  } catch (error) {
-    console.warn('Falling back to window.open for privileged URL:', error);
-    openWithWindow(normalizedUrl);
+  for (const candidate of candidates) {
+    try {
+      await sendOpenMessage(candidate);
+      return;
+    } catch (error) {
+      console.warn('Failed to open privileged URL candidate:', candidate, error);
+    }
+  }
+
+  const fallback = candidates[candidates.length - 1];
+  if (fallback.startsWith('http://') || fallback.startsWith('https://')) {
+    openWithWindow(fallback);
   }
 };

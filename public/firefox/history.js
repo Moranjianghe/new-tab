@@ -1,9 +1,23 @@
 const extensionApi = typeof browser !== "undefined" ? browser : typeof chrome !== "undefined" ? chrome : null;
-const hasPromiseApi = typeof browser !== "undefined";
+const runtimeApi = extensionApi && extensionApi.runtime;
 const historyApi = extensionApi && extensionApi.history;
+const hasPromiseApi = typeof browser !== "undefined";
+
 const listEl = document.getElementById("list");
 const statusEl = document.getElementById("status");
 const searchEl = document.getElementById("search");
+
+const isExtensionContext = location.protocol === "moz-extension:" || location.protocol === "chrome-extension:";
+
+const showError = (message) => {
+  listEl.textContent = "";
+  statusEl.textContent = message;
+  statusEl.style.color = "#d93025";
+  if (searchEl) {
+    searchEl.disabled = true;
+    searchEl.placeholder = "此页面仅能在扩展内使用";
+  }
+};
 
 const formatTime = (timestamp) => {
   if (!timestamp) return "";
@@ -13,10 +27,12 @@ const formatTime = (timestamp) => {
 const historySearch = (text) => {
   if (!historyApi) return Promise.reject(new Error("history api unavailable"));
   const query = { text, startTime: 0, maxResults: 500 };
+
   if (hasPromiseApi) return historyApi.search(query);
+
   return new Promise((resolve, reject) => {
     historyApi.search(query, (items) => {
-      const err = chrome.runtime && chrome.runtime.lastError;
+      const err = runtimeApi && runtimeApi.lastError;
       if (err) {
         reject(new Error(err.message));
         return;
@@ -35,6 +51,7 @@ const renderList = (items) => {
 
   statusEl.textContent = `共 ${items.length} 条`;
   const frag = document.createDocumentFragment();
+
   for (const item of items) {
     const row = document.createElement("article");
     row.className = "item";
@@ -56,18 +73,20 @@ const renderList = (items) => {
     row.append(link, meta);
     frag.appendChild(row);
   }
+
   listEl.appendChild(frag);
 };
 
 const loadHistory = async () => {
   try {
+    statusEl.style.color = "";
     statusEl.textContent = "加载中...";
     const term = searchEl.value.trim();
     const items = await historySearch(term);
     items.sort((a, b) => (b.lastVisitTime || 0) - (a.lastVisitTime || 0));
     renderList(items);
   } catch (error) {
-    statusEl.textContent = "读取历史记录失败";
+    showError("读取历史记录失败，请确认扩展权限已开启。");
     console.error(error);
   }
 };
@@ -78,4 +97,10 @@ searchEl.addEventListener("input", () => {
   timer = setTimeout(loadHistory, 220);
 });
 
-loadHistory();
+if (!isExtensionContext) {
+  showError("错误：当前不是扩展页面。请从浏览器新标签页或扩展内打开。");
+} else if (!runtimeApi || !historyApi) {
+  showError("错误：扩展 API 不可用，无法读取历史记录。");
+} else {
+  loadHistory();
+}

@@ -2,7 +2,7 @@
   "name": "new tab",
   "description": "A new tab page for Firefox",
   "version": "0.2025.5.8",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "browser_specific_settings": {
     "gecko": {
       "id": "new-tab@example.com",
@@ -18,10 +18,9 @@
     "bookmarks"
   ],
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "scripts": ["background.js"]
   },
-  "browser_action": {
+  "action": {
     "default_title": "New Tab"
   }
 }

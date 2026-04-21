@@ -1,7 +1,7 @@
 {
   "name": "new tab",
   "description": "A new tab page for Firefox",
-  "version": "0.2025.5.8",
+  "version": "0.2026.4.21",
   "manifest_version": 3,
   "browser_specific_settings": {
     "gecko": {

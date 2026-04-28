@@ -2,6 +2,11 @@
 
 A customizable new-tab page extension for Chromium and Firefox.
 
+## Links
+
+- Online demo: https://new-tab-gamma.vercel.app/
+- Firefox Add-ons: https://addons.mozilla.org/zh-TW/firefox/addon/moranjianghe-s-new-tab/
+
 ## Features
 
 - Multiple search engines support (Google, Bing, DuckDuckGo, etc.)
